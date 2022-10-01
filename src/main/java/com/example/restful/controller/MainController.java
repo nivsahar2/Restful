@@ -1,10 +1,5 @@
 package com.example.restful.controller;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import netscape.javascript.JSObject;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,23 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 @RestController
-public class HelloController {
+public class MainController {
 
     String file = "src/main/resources/CV.jpg";
+
     @RequestMapping("/Weather")
     public String getWeather(@RequestParam String Location) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
@@ -40,20 +31,22 @@ public class HelloController {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        return  response.body();
+        return response.body();
     }
+
     @RequestMapping(value = "/CV", method = RequestMethod.GET)
     public void getImageAsByteArray(HttpServletResponse response) throws IOException {
         File f = new File(file);
-        if(f.exists() && !f.isDirectory()) {
+        if (f.exists() && !f.isDirectory()) {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             BufferedImage img = ImageIO.read(new File(file));
-            ImageIO.write(img,file.substring(file.lastIndexOf('.') + 1), os);
+            ImageIO.write(img, file.substring(file.lastIndexOf('.') + 1), os);
             InputStream in = new ByteArrayInputStream(os.toByteArray());
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             IOUtils.copy(in, response.getOutputStream());
         }
     }
+
     @RequestMapping("/TimeZone")
     public String getTimeZone(@RequestParam String Location) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
@@ -63,6 +56,6 @@ public class HelloController {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        return  response.body();
+        return response.body();
     }
 }
